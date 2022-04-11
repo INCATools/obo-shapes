@@ -1,0 +1,87 @@
+PREFIX : <http://purl.obolibrary.org/qc/obo.shex#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+PREFIX definition: <http://purl.obolibrary.org/obo/IAO_0000115>
+PREFIX term_replaced_by: <http://purl.obolibrary.org/obo/IAO_0100001>
+PREFIX term_tracker_item: <http://purl.obolibrary.org/obo/IAO_0000233>
+PREFIX never_in_taxon: <http://purl.obolibrary.org/obo/RO_0002161>
+
+:OBOEntity IRI {
+  rdfs:label @:NiceWhitespaceString ;
+  definition: @:NiceWhitespaceString ? ;
+  oboInOwl:hasExactSynonym @:UniqueLabel * ;
+  oboInOwl:hasRelatedSynonym @:NiceWhitespaceString * ;
+  oboInOwl:hasBroadSynonym @:NiceWhitespaceString * ;
+  oboInOwl:hasNarrowSynonym @:NiceWhitespaceString * ;
+  oboInOwl:hasDbXref @:CURIEString * ;
+  oboInOwl:hasAlternativeId @:CURIEString * ;
+  oboInOwl:hasOBONamespace xsd:string ? ;
+  oboInOwl:inSubset @:OBOSubset * ;
+  oboInOwl:created_by xsd:string ? ;
+  oboInOwl:creation_date xsd:string ? ; # date regex? why don't we use dateTime?
+  rdfs:comment @:NiceWhitespaceString ? ;
+  term_tracker_item: xsd:anyURI * ;
+  never_in_taxon: IRI * 
+}
+
+:ActiveEntity @:OBOEntity AND {
+  rdfs:label @:UniqueLabel ;
+} AND NOT {
+  owl:deprecated [ true ] ;
+}
+
+:ObsoleteEntity @:OBOEntity AND {
+  owl:deprecated [ true ] ;
+  rdfs:label /obsolete .+/ ;
+  definition: /OBSOLETE\. .+/ ? 
+}
+
+:Term @:OBOEntity AND {
+  rdf:type [ owl:Class ] ;
+}
+
+:ActiveTerm @:Term AND @:ActiveEntity AND {
+  rdfs:subClassOf @:ActiveTerm OR BNODE * ;
+  owl:equivalentClass BNODE * // rdfs:comment "Named equivalents are disallowed" 
+}
+
+:ObsoleteTerm @:Term AND @:ObsoleteEntity AND {
+  rdfs:subClassOf . {0} ;
+  ^rdfs:subClassOf . {0} ;
+  owl:equivalentClass . {0} ;
+  ^owl:equivalentClass . {0} ;
+  owl:disjointWith . {0} ;
+  ^owl:disjointWith . {0} ;
+  ^owl:someValuesFrom . {0} ;
+  ^owl:allValuesFrom . {0} ;
+  ^rdf:first . {0} // rdfs:comment "Lists are used for OWL intersections"
+}
+
+:Relation @:OBOEntity AND {
+  rdf:type [ owl:ObjectProperty ] ;
+}
+
+:ActiveRelation @:Relation AND @:ActiveEntity AND {
+  rdfs:subPropertyOf @:ActiveRelation *
+}
+
+:ObsoleteRelation @:Relation AND @:ObsoleteEntity AND {
+  rdfs:subPropertyOf . {0} 
+}
+
+:UniqueLabel @:NiceWhitespaceString AND {
+  ^rdfs:label IRI | ^oboInOwl:hasExactSynonym IRI
+}
+
+:NiceWhitespaceString xsd:string AND NOT /^ / AND NOT / $/ AND NOT /  /
+
+:CURIEString xsd:string AND /.+:.+/
+
+:OBOSubset IRI AND {
+  rdfs:subPropertyOf [ oboInOwl:SubsetProperty ]
+}
+
