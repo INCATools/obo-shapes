@@ -14,15 +14,17 @@
     dc:license <http://creativecommons.org/publicdomain/zero/1.0/> .
 
 
-qc:OWLClass a sh:NodeShape ;
-    sh:targetClass owl:Class ;
-    sh:xone ( qc:NamedClass qc:AnonymousClass ) .
-
-qc:AnonymousClass a sh:NodeShape ;
-    sh:nodeKind sh:BlankNode .
-
-
 qc:NamedClass a sh:NodeShape ;
+    sh:target [
+        a sh:SPARQLTarget ;
+        sh:select """
+            SELECT ?this
+            WHERE {
+              ?this a <http://www.w3.org/2002/07/owl#Class> .
+              FILTER(isIRI(?this))
+            }
+        """
+    ] ;
     sh:nodeKind sh:IRI ;
     sh:node qc:TextValuesShouldNotContainDoubleSpaces ;
     sh:node qc:ExactlyOneLabel .
