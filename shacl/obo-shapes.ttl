@@ -1,13 +1,13 @@
-@prefix      rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix     rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix       sh: <http://www.w3.org/ns/shacl#> .
-@prefix      xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix      owl: <http://www.w3.org/2002/07/owl#> .
-@prefix oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> .
-@prefix       dc: <http://purl.org/dc/terms/> .
-@prefix      obo: <http://purl.obolibrary.org/obo/> .
-@prefix       qc: <http://purl.obolibrary.org/tools/qc-shapes/shapes#> .
-
+@prefix      rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix     rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix       sh:   <http://www.w3.org/ns/shacl#> .
+@prefix      xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix      owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix oboInOwl:   <http://www.geneontology.org/formats/oboInOwl#> .
+@prefix       dc:   <http://purl.org/dc/terms/> .
+@prefix      obo:   <http://purl.obolibrary.org/obo/> .
+@prefix       qc:   <http://purl.obolibrary.org/tools/qc-shapes/shapes#> .
+@prefix definition: <http://purl.obolibrary.org/obo/IAO_0000115>
 
 <http://purl.obolibrary.org/tools/qc-shapes/shapes.ttl> 
     dc:hasVersion <http://purl.obolibrary.org/tools/qc-shapes/releases/2016-7-12/shapes.ttl> ;
@@ -29,6 +29,12 @@ qc:NamedClass a sh:NodeShape ;
     sh:node qc:TextValuesShouldNotContainDoubleSpaces ;
     sh:node qc:ExactlyOneLabel ;
     sh:property [
+        sh:severity sh:Warning ;
+        sh:path definition: ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
         sh:message "Subset values must be subproperties of SubsetProperty." ;
         sh:path oboInOwl:inSubset ;
         sh:node [
@@ -38,6 +44,23 @@ qc:NamedClass a sh:NodeShape ;
                 sh:hasValue oboInOwl:SubsetProperty
             ]
         ]
+    ] .
+
+
+qc:DeprecatedEntity a sh:NodeShape ;
+    sh:target [
+        a sh:SPARQLTarget ;
+        sh:select """
+            SELECT ?this
+            WHERE {
+              ?this <http://www.w3.org/2002/07/owl#deprecated> true .
+              FILTER(isIRI(?this))
+            }
+        """
+    ] ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:pattern "^obsolete "
     ] .
 
 
