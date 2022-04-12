@@ -27,7 +27,18 @@ qc:NamedClass a sh:NodeShape ;
     ] ;
     sh:nodeKind sh:IRI ;
     sh:node qc:TextValuesShouldNotContainDoubleSpaces ;
-    sh:node qc:ExactlyOneLabel .
+    sh:node qc:ExactlyOneLabel ;
+    sh:property [
+        sh:message "Subset values must be subproperties of SubsetProperty." ;
+        sh:path oboInOwl:inSubset ;
+        sh:node [
+            sh:nodeKind sh:IRI ;
+            sh:property [
+                sh:path rdfs:subPropertyOf ;
+                sh:hasValue oboInOwl:SubsetProperty
+            ]
+        ]
+    ] .
 
 
 qc:TextValuesShouldNotContainDoubleSpaces a sh:NodeShape ;

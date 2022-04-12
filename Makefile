@@ -24,7 +24,7 @@ SHEX_FAIL_OUT := $(patsubst test-data/fail/%,output/fail/%-shex.out,$(FAIL_FILES
 
 output/%-shacl.out: test-data/% shacl/obo-shapes.ttl .validate-shacl
 	mkdir -p $(dir $@)
-	shacl v --shapes shacl/obo-shapes.ttl --data $< --text >$@
+	shacl v --shapes shacl/obo-shapes.ttl --data $< >$@ #--text 
 
 output/%-shex.out: test-data/% shex/obo-shapes.shex shex/obo-shapes.shapeMap .validate-shex
 	mkdir -p $(dir $@)
